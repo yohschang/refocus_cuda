@@ -36,14 +36,6 @@ void fft_propogate(cufftComplex* phimap_in, cufftComplex* phimap_out, double &d,
 	cufftExecC2C(plan, (cufftComplex *)d_p_out, (cufftComplex *)d_p_out, CUFFT_INVERSE);  // must divide number of elements(sizex*sizey) to return correct value 
 
 	cudaMemcpy(phimap_out, d_p_out, sizeof(cufftComplex)*sizex*sizey, cudaMemcpyDeviceToHost);
-	//for (int i = 0; i < 256; i++)
-	//{
-	//	for (int j = 0; j < 256; j++)
-	//	{
-	//		cout<<" (" << phimap_out[i*256+j].x << ", " << phimap_out[i * 256 + j].y << ") ";
-	//	}
-	//	cout << "\n";
-	//}
 	cufftDestroy(plan);
 	cudaFree(d_p_in);
 	cudaFree(d_p_out);
@@ -66,8 +58,6 @@ float tuma_calculation(cufftComplex* fulltuma, int sizex, int sizey)
 	//cudaMemcpy(d_std_mean, std_mean, sizeof(double), cudaMemcpyHostToDevice);
 	cudaMemcpy(d_fulltuma, fulltuma, sizeof(cufftComplex)*sizex*sizey, cudaMemcpyHostToDevice);
 	tuma_calculation_cu<<<grid , block >>>(d_fulltuma, sizex, sizey, d_tuma_coeff,d_tuma_mean);
-	//tuma_calculation_cu << <1,1 >> > (d_fulltuma, sizex, sizey, d_tuma_coeff);
-	//cudaThreadSynchronize();
 
 	cudaMemcpy(&tuma_coeff, d_tuma_coeff, sizeof(float), cudaMemcpyDeviceToHost);
 	cudaMemcpy(&tuma_mean, d_tuma_mean, sizeof(float), cudaMemcpyDeviceToHost);
@@ -86,7 +76,6 @@ float tuma_calculation_cpp(cufftComplex* fulltuma, int sizex, int sizey)
 	// calculate average
 	float sum = 0, std = 0;
 
-	//float average = accumulate(fulltuma.begin(), fulltuma.end(), 0.0)/(sizex*sizey); //accumulate(start,end,initial_num)
 	for (int i = 0; i < sizex*sizey; i++)
 	{
 		sum += fulltuma[i].x;
@@ -105,10 +94,8 @@ void main(cufftComplex* phimap_in, int sizex, int sizey, double start_pos, doubl
 	long starttime = clock();
 	sizex = 256;
 	sizey = 256;
-	// because 256*256 is to big to use static memory therefore have to allocate an dynamic memory first 
 	phimap_in = new cufftComplex[sizex*sizey];
 	cufftComplex* phimap_out = new cufftComplex[sizex*sizey];
-	//vector<double> phimap(sizex*sizey);
 
 	double readinreal;
 	double readinimag;
@@ -139,11 +126,6 @@ void main(cufftComplex* phimap_in, int sizex, int sizey, double start_pos, doubl
 	
 	vector <float> tuma;
 	vector <double> Position;
-
-	//fft_propogate(phimap_in, phimap_out, start_pos, nm, res, sizex, sizey);
-	//float tuma_coeff = tuma_calculation(phimap_out, sizex, sizey);
-	//float tuma_coeff = tuma_calculation_cpp(phimap_out, sizex, sizey);
-	//cout <<"@@" << tuma_coeff << "@@";
 
 	
 	//cout << "start cal";
