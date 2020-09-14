@@ -1,6 +1,6 @@
 # refocus_cuda
 
-refocus_cuda.cu (main function) : \n 
+refocus_cuda.cu (main function) : "\n" 
 A cuda version Autofocusing(Numerical refocusing ) in Digital Holographic Microscopy
 func_file.cu : cuda kernel 
 
